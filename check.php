@@ -39,69 +39,80 @@ mysqli_select_db($con, 'quizdatabase');
         <td>Question attempted</td>
 
         <?php
+        //counter =0
+
+        $Resultants =0;   
         if(isset($_POST['submit']))
         {
         	if(!empty($_POST['quizcheck'])){
 
-        	if ($selected = $_POST['quizcheck']) {
-        		$count = count($_POST['quizcheck']); }	
+        	//if ($selected = $_POST['quizcheck']) {
+            //counting number of checked checkboxes.
+        		$checked_count = count($_POST['quizcheck']); 	
         
 
         ?>
 
-        <td><?php echo "out of 10 you have selected ".$count." options"; ?></td>
+        <td>
+          <?php
+           echo "out of 10 you have selected ".$checked_count." options"; ?>
+          </td>
       </tr>
 
-      <tr>	
-        <td>Your score</td>
+
 		<?php
+    //loop to display and store values of checked checkboxes.
 		$selected = $_POST['quizcheck'];
 
-		$q = "select * from questions";
-		$query = mysqli_query($con, $q);
-
-		$result = 0;
+		$q1 = "select * from questions";
+    $ansresults = mysqli_query($con, $q1);
 		$i = 1;
 
-		while( $rows = mysqli_fetch_array($query))
+		while( $rows = mysqli_fetch_array($ansresults))
+    {
+      $flag = $rows['aid'] == $selected[$i];
+    
+    if ($flag)
 		{
-			//print_r($rows['aid']);
-
-			$checked = $rows['aid'] == $selected[$i] ;
-
-			if($checked)
-			{
-				$result++;
+     	$Resultants++;
 			}
 
 			$i++;
-
-		}
+		
   }
 
 		?>
 
+          <tr>  
+        <td>Your score</td>
+
         <td colspan="2">
-        	<?php echo "your total score is".$result; 
+        	<?php echo "your total score is".$Resultants. ".";
         		}
         		else
         		{
         			echo "please select atlest one option.";
         		}
+          }
+
         		?>
         	</td>
       </tr>
 
-  </table>
+  
 
 <?php 
 
 		$name = $_SESSION['username'];
-		$finallyresult = "insert into users(uname,totalques,anscorrect) values ('$name','10','$result')";
+
+    $finallyresult = "insert into users(uname,totalques,anscorrect) 
+    values ('$name','10','$Resultants') ";
+
 		$resultquery = mysqli_query($con,$finallyresult);
 
-
  ?>
+</table>
+
     <div class = "m-auto d-block">
        <a href = "logout.php"> Logout </a>
    </div><br>
@@ -110,7 +121,7 @@ mysqli_select_db($con, 'quizdatabase');
 
 
    <div>
-       <h5 class = "text-center">@2020 webcreation</h5>
+       <h5 class = "text-center">@2020 Pooja webcreation</h5>
    </div><br><br>
 
 </body>
